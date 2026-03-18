@@ -556,8 +556,8 @@ function Footer() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
         <p className="text-white/30 text-xs">© {new Date().getFullYear()} Earnbase. Built on Celo. All rights reserved.</p>
         <div className="flex gap-4">
-          {["GitHub", "Docs", "Twitter"].map((link) => (
-            <a key={link} href="#" className="text-white/40 hover:text-[#FCFF52] text-xs font-bold transition-colors">{link}</a>
+          {[{ name: "GitHub", href: "https://github.com/jeffIshmael/earnbase-web" }, { name: "Docs", href: "/docs" }, { name: "Twitter", href: "https://x.com/0xearnbase" }].map((link) => (
+            <a key={link.name} href={link.href} className="text-white/40 hover:text-[#FCFF52] text-xs font-bold transition-colors">{link.name}</a>
           ))}
         </div>
       </div>
