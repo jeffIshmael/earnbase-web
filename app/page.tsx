@@ -241,7 +241,7 @@ function Hero() {
         {/* Live badge */}
         <div className="inline-flex items-center gap-2 bg-[#FCFF52]/10 border border-[#FCFF52]/30 rounded-full px-4 py-1.5 mb-8">
           <span className="w-2 h-2 rounded-full bg-[#B2EBA1] animate-pulse" />
-          <span className="text-[#FCFF52] text-xs font-bold tracking-widest uppercase">Now Live on Celo</span>
+          <span className="text-[#FCFF52] text-xs font-bold tracking-widest uppercase">Live on Celo</span>
         </div>
 
         {/* Headline — centered */}
@@ -260,21 +260,19 @@ function Hero() {
         <div className="flex items-center bg-black/40 border-4 border-black rounded-2xl p-1.5 gap-1.5 mb-2">
           <button
             onClick={() => setActiveTab("agent")}
-            className={`px-6 py-2.5 rounded-xl font-black text-sm uppercase tracking-wide transition-all active:scale-95 ${
-              activeTab === "agent"
-                ? "bg-[#FCFF52] text-[#1A0329] shadow-[3px_3px_0_0_rgba(0,0,0,1)]"
-                : "text-white/50 hover:text-white"
-            }`}
+            className={`px-6 py-2.5 rounded-xl font-black text-sm uppercase tracking-wide transition-all active:scale-95 ${activeTab === "agent"
+              ? "bg-[#FCFF52] text-[#1A0329] shadow-[3px_3px_0_0_rgba(0,0,0,1)]"
+              : "text-white/50 hover:text-white"
+              }`}
           >
             🤖 I'm an Agent
           </button>
           <button
             onClick={() => setActiveTab("human")}
-            className={`px-6 py-2.5 rounded-xl font-black text-sm uppercase tracking-wide transition-all active:scale-95 ${
-              activeTab === "human"
-                ? "bg-[#FCFF52] text-[#1A0329] shadow-[3px_3px_0_0_rgba(0,0,0,1)]"
-                : "text-white/50 hover:text-white"
-            }`}
+            className={`px-6 py-2.5 rounded-xl font-black text-sm uppercase tracking-wide transition-all active:scale-95 ${activeTab === "human"
+              ? "bg-[#FCFF52] text-[#1A0329] shadow-[3px_3px_0_0_rgba(0,0,0,1)]"
+              : "text-white/50 hover:text-white"
+              }`}
           >
             🧑 I'm a Human
           </button>
@@ -390,6 +388,8 @@ function ForHumans() {
               ))}
             </ul>
             <a href="https://earnbase.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-block bg-[#FCFF52] text-[#1A0329] border-4 border-black px-6 py-3 rounded-xl font-black shadow-[5px_5px_0_0_rgba(0,0,0,0.3)] hover:shadow-none hover:translate-x-[5px] hover:translate-y-[5px] transition-all text-sm uppercase tracking-wide">
               Start Earning →
             </a>
@@ -422,7 +422,7 @@ function ForAgents() {
                 <span className="text-white/40 text-xs font-mono">agent.ts</span>
               </div>
               <pre className="text-xs text-[#FCFF52] font-mono leading-relaxed overflow-x-auto">
-{`import { EarnbaseSkill } from
+                {`import { EarnbaseSkill } from
   '.agents/skills/earnbase-agent-tasks';
 
 const earnbase = new EarnbaseSkill();
@@ -442,7 +442,7 @@ earnbase.listenForCompletion(
               </pre>
             </div>
 
-            <a href="https://github.com/jeffIshmael/earnbase-skills"
+            <a href="/docs"
               className="inline-block bg-[#1A0329] text-[#FCFF52] border-4 border-black px-6 py-3 rounded-xl font-black shadow-[5px_5px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[5px] hover:translate-y-[5px] transition-all text-sm uppercase tracking-wide">
               Install the Skill →
             </a>
@@ -479,6 +479,28 @@ earnbase.listenForCompletion(
 function Stats() {
   const ref = useRef<HTMLDivElement>(null);
   const [started, setStarted] = useState(false);
+  const [stats, setStats] = useState({
+    totalParticipants: 0,
+    totalPaidOut: "0",
+    totalTasksCompleted: "0",
+    totalAgentsServed: "0"
+  });
+
+  useEffect(() => {
+    const fetchStatsData = async () => {
+      try {
+        const response = await fetch("/api/stats");
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          setStats(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch stats:", error);
+      }
+    };
+    fetchStatsData();
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -499,10 +521,10 @@ function Stats() {
           </h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard value={1240} label="Agent Tasks Done" started={started} />
-          <StatCard value={3800} label="Human Participants" started={started} />
-          <StatCard value={28500} label="USDC Paid Out" prefix="$" started={started} />
-          <StatCard value={42} label="AI Agents Served" started={started} />
+          <StatCard value={parseInt(stats.totalTasksCompleted) || 0} label="Agent Tasks Done" started={started} />
+          <StatCard value={stats.totalParticipants || 0} label="Human Participants" started={started} />
+          <StatCard value={parseFloat(stats.totalPaidOut) / 10 ** 6 || 0} label="USDC Paid Out" prefix="$" started={started} />
+          <StatCard value={parseInt(stats.totalAgentsServed) || 0} label="AI Agents Served" started={started} />
         </div>
       </div>
     </section>

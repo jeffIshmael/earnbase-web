@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Section = {
@@ -21,36 +21,36 @@ const NAV: SectionGroup[] = [
   {
     group: "Getting Started",
     items: [
-      { id: "overview",      label: "Overview",         icon: "📖" },
-      { id: "how-it-works",  label: "How It Works",     icon: "⚙️" },
-      { id: "quickstart",    label: "Quickstart",       icon: "⚡" },
+      { id: "overview", label: "Overview", icon: "📖" },
+      { id: "how-it-works", label: "How It Works", icon: "⚙️" },
+      { id: "quickstart", label: "Quickstart", icon: "⚡" },
     ],
   },
   {
     group: "For AI Agents",
     items: [
-      { id: "install",       label: "Install the Skill",  icon: "📦" },
-      { id: "lifecycle",     label: "Open-Close Lifecycle",icon: "🔄" },
-      { id: "get-quote",     label: "getTaskQuote()",      icon: "💬" },
-      { id: "submit-task",   label: "requestHumanTask()",  icon: "🚀" },
-      { id: "results",       label: "Get Results",         icon: "📥" },
-      { id: "rate-platform", label: "Rate the Platform",   icon: "⭐" },
+      { id: "install", label: "Install the Skill", icon: "📦" },
+      { id: "lifecycle", label: "Open-Close Lifecycle", icon: "🔄" },
+      { id: "get-quote", label: "getTaskQuote()", icon: "💬" },
+      { id: "submit-task", label: "requestHumanTask()", icon: "🚀" },
+      { id: "results", label: "Get Results", icon: "📥" },
+      { id: "rate-platform", label: "Rate the Platform", icon: "⭐" },
     ],
   },
   {
     group: "For Humans",
     items: [
-      { id: "earn",          label: "How to Earn",        icon: "💰" },
-      { id: "task-types",    label: "Task Types",         icon: "🏷" },
-      { id: "feedback",      label: "Submitting Feedback", icon: "✅" },
+      { id: "earn", label: "How to Earn", icon: "💰" },
+      { id: "task-types", label: "Task Types", icon: "🏷" },
+      { id: "feedback", label: "Submitting Feedback", icon: "✅" },
     ],
   },
   {
     group: "Reference",
     items: [
-      { id: "tags",          label: "ERC-8004 Tags",      icon: "🏷" },
-      { id: "errors",        label: "Error Reference",    icon: "🔴" },
-      { id: "network",       label: "Network Details",    icon: "🌐" },
+      { id: "tags", label: "ERC-8004 Tags", icon: "🏷" },
+      { id: "errors", label: "Error Reference", icon: "🔴" },
+      { id: "network", label: "Network Details", icon: "🌐" },
     ],
   },
 ];
@@ -86,7 +86,7 @@ function Callout({ type = "info", children }: { type?: "info" | "warn" | "tip"; 
   const styles = {
     info: { bg: "bg-[#8AC0F9]/10 border-[#8AC0F9]", icon: "ℹ️", label: "Note" },
     warn: { bg: "bg-[#F29E5F]/10 border-[#F29E5F]", icon: "⚠️", label: "Warning" },
-    tip:  { bg: "bg-[#B2EBA1]/10 border-[#B2EBA1]", icon: "💡", label: "Tip" },
+    tip: { bg: "bg-[#B2EBA1]/10 border-[#B2EBA1]", icon: "💡", label: "Tip" },
   }[type];
   return (
     <div className={`${styles.bg} border-l-4 rounded-r-xl p-4 my-4`}>
@@ -149,6 +149,28 @@ function Table({ headers, rows }: { headers: string[]; rows: string[][] }) {
 
 // ─── Main Docs Content ────────────────────────────────────────────────────────
 function DocsContent({ activeSection }: { activeSection: string }) {
+  const [stats, setStats] = useState({
+    totalParticipants: 0,
+    totalPaidOut: "0",
+    totalTasksCompleted: "0",
+    totalAgentsServed: "0"
+  });
+
+  useEffect(() => {
+    const fetchStatsData = async () => {
+      try {
+        const response = await fetch("/api/stats");
+        if (response.ok) {
+          const data = await response.json();
+          setStats(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch stats:", error);
+      }
+    };
+    fetchStatsData();
+  }, []);
+
   return (
     <div className="max-w-3xl">
 
@@ -166,9 +188,9 @@ function DocsContent({ activeSection }: { activeSection: string }) {
       </P>
       <div className="grid grid-cols-3 gap-3 my-6">
         {[
-          { label: "Agent Tasks Done", value: "1,240+", bg: "bg-[#FCFF52]" },
-          { label: "Human Participants", value: "3,800+", bg: "bg-[#B2EBA1]" },
-          { label: "USDC Paid Out", value: "$28,500+", bg: "bg-[#8AC0F9]" },
+          { label: "Agent Tasks Done", value: `${parseInt(stats.totalTasksCompleted).toLocaleString()}+`, bg: "bg-[#FCFF52]" },
+          { label: "Human Participants", value: `${stats.totalParticipants.toLocaleString()}+`, bg: "bg-[#B2EBA1]" },
+          { label: "USDC Paid Out", value: `$${parseFloat(stats.totalPaidOut).toLocaleString()}+`, bg: "bg-[#8AC0F9]" },
         ].map((s) => (
           <div key={s.label} className={`${s.bg} border-4 border-black rounded-xl p-4 shadow-[3px_3px_0_0_rgba(0,0,0,1)]`}>
             <div className="font-black text-2xl text-[#1A0329]">{s.value}</div>
@@ -182,12 +204,12 @@ function DocsContent({ activeSection }: { activeSection: string }) {
       <P>Every interaction on Earnbase follows a 6-step Open-Close Lifecycle:</P>
       <div className="space-y-3 my-4">
         {[
-          { n: "01", title: "Get a Quote",       desc: "The agent calls getTaskQuote() to receive the price and destination wallet address.",       color: "bg-[#FCFF52]" },
-          { n: "02", title: "Pay",               desc: "The agent pays via X402 wallet signature (autonomous) or a manual USDC transfer.",           color: "bg-[#B2EBA1]" },
-          { n: "03", title: "Submit the Task",   desc: "requestHumanTask() opens the task on Earnbase and makes it visible to human workers.",       color: "bg-[#8AC0F9]" },
-          { n: "04", title: "Wait for Results",  desc: "The agent listens for the FeedbackRequestCompleted event or polls queryTaskResults().",      color: "bg-[#F29E5F]" },
-          { n: "05", title: "Retrieve Results",  desc: "Results are fetched from the resultsUrl (IPFS via Pinata gateway).",                         color: "bg-[#B2EBA1]" },
-          { n: "06", title: "Rate the Platform", desc: "The agent calls submitPlatformRating() to record an on-chain ERC-8004 service rating.",     color: "bg-[#FCFF52]" },
+          { n: "01", title: "Get a Quote", desc: "The agent calls getTaskQuote() to receive the price and destination wallet address.", color: "bg-[#FCFF52]" },
+          { n: "02", title: "Pay", desc: "The agent pays via X402 wallet signature (autonomous) or a manual USDC transfer.", color: "bg-[#B2EBA1]" },
+          { n: "03", title: "Submit the Task", desc: "requestHumanTask() opens the task on Earnbase and makes it visible to human workers.", color: "bg-[#8AC0F9]" },
+          { n: "04", title: "Wait for Results", desc: "The agent listens for the FeedbackRequestCompleted event or polls queryTaskResults().", color: "bg-[#F29E5F]" },
+          { n: "05", title: "Retrieve Results", desc: "Results are fetched from the resultsUrl (IPFS via Pinata gateway).", color: "bg-[#B2EBA1]" },
+          { n: "06", title: "Rate the Platform", desc: "The agent calls submitPlatformRating() to record an on-chain ERC-8004 service rating.", color: "bg-[#FCFF52]" },
         ].map((s) => (
           <div key={s.n} className="flex gap-4 items-start bg-white border-2 border-black rounded-xl p-4 shadow-[3px_3px_0_0_rgba(0,0,0,1)]">
             <div className={`${s.color} border-2 border-black rounded-lg w-10 h-10 flex items-center justify-center shrink-0 font-black text-xs text-[#1A0329]`}>{s.n}</div>
@@ -529,11 +551,10 @@ export default function DocsPage() {
                       key={item.id}
                       href={`#${item.id}`}
                       onClick={() => { setActiveSection(item.id); setMobileNavOpen(false); }}
-                      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-black transition-all ${
-                        activeSection === item.id
-                          ? "bg-[#1A0329] text-[#FCFF52] shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
-                          : "text-[#1A0329]/70 hover:bg-[#E6E3D5] hover:text-[#1A0329]"
-                      }`}
+                      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-black transition-all ${activeSection === item.id
+                        ? "bg-[#1A0329] text-[#FCFF52] shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
+                        : "text-[#1A0329]/70 hover:bg-[#E6E3D5] hover:text-[#1A0329]"
+                        }`}
                     >
                       <span>{item.icon}</span>
                       <span>{item.label}</span>
