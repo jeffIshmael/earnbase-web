@@ -12,7 +12,7 @@ function useCounter(end: number, duration = 2000, start = false) {
     const step = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
-      setCount(Math.floor(progress * end));
+      setCount(progress * end);
       if (progress < 1) requestAnimationFrame(step);
     };
     requestAnimationFrame(step);
@@ -21,14 +21,14 @@ function useCounter(end: number, duration = 2000, start = false) {
 }
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
-function StatCard({ value, label, prefix = "", suffix = "", started }: {
-  value: number; label: string; prefix?: string; suffix?: string; started: boolean;
+function StatCard({ value, label, prefix = "", suffix = "", started, decimals = 0 }: {
+  value: number | string; label: string; prefix?: string; suffix?: string; started: boolean; decimals?: number;
 }) {
-  const count = useCounter(value, 1800, started);
+  const count = useCounter(Number(value), 1800, started);
   return (
     <div className="border-4 border-black bg-[#FCFF52] shadow-[6px_6px_0_0_rgba(0,0,0,1)] rounded-2xl p-6 flex flex-col gap-1">
       <span className="font-black text-4xl md:text-5xl text-[#1A0329] tracking-tight">
-        {prefix}{count.toLocaleString()}{suffix}
+        {prefix}{count.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}{suffix}
       </span>
       <span className="text-sm font-bold text-[#4E632A] uppercase tracking-widest">{label}</span>
     </div>
@@ -493,6 +493,7 @@ function Stats() {
         if (response.ok) {
           const data = await response.json();
           console.log(data);
+          console.log(Number(data.totalPaidOut) / 1000000);
           setStats(data);
         }
       } catch (error) {
@@ -523,7 +524,7 @@ function Stats() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <StatCard value={parseInt(stats.totalTasksCompleted) || 0} label="Agent Tasks Done" started={started} />
           <StatCard value={stats.totalParticipants || 0} label="Human Participants" started={started} />
-          <StatCard value={parseFloat(stats.totalPaidOut) / 10 ** 6 || 0} label="USDC Paid Out" prefix="$" started={started} />
+          <StatCard value={(Number(stats.totalPaidOut) / 1000000).toFixed(2) || "0"} label="USDC Paid Out" prefix="$" started={started} decimals={2} />
           <StatCard value={parseInt(stats.totalAgentsServed) || 0} label="AI Agents Served" started={started} />
         </div>
       </div>

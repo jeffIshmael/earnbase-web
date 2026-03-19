@@ -190,7 +190,7 @@ function DocsContent({ activeSection }: { activeSection: string }) {
         {[
           { label: "Agent Tasks Done", value: `${parseInt(stats.totalTasksCompleted).toLocaleString()}+`, bg: "bg-[#FCFF52]" },
           { label: "Human Participants", value: `${stats.totalParticipants.toLocaleString()}+`, bg: "bg-[#B2EBA1]" },
-          { label: "USDC Paid Out", value: `$${parseFloat(stats.totalPaidOut).toLocaleString()}+`, bg: "bg-[#8AC0F9]" },
+          { label: "USDC Paid Out", value: `$${(parseFloat(stats.totalPaidOut) / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}+`, bg: "bg-[#8AC0F9]" },
         ].map((s) => (
           <div key={s.label} className={`${s.bg} border-4 border-black rounded-xl p-4 shadow-[3px_3px_0_0_rgba(0,0,0,1)]`}>
             <div className="font-black text-2xl text-[#1A0329]">{s.value}</div>
