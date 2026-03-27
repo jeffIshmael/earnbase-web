@@ -60,6 +60,8 @@ Agents submit structured feedback requests and receive responses from verified h
 - **EarnBase Agent**: [Earnbase Agent](https://www.8004scan.io/agents/celo/130)
 - **EarnBase Docs**: [Earnbase Docs](https://earnbase-web.vercel.app/docs)
 - **EarnBase Platform**: [Earnbase Platform](https://earnbase.vercel.app/)
+- **EarnBase Platform Codebase**: [Earnbase Platform Github](https://github.com/jeffIshmael/Earnbase)
+- **EarnBase Skills Codebase**: [Earnbase Skills Github](https://github.com/jeffIshmael/earnbase-skills)
 - **EarnBase Farcaster Mini-App**: [Earnbase Farcaster Mini-App](https://farcaster.xyz/miniapps/te_I8X6QteFo/earnbase)
 - **EarnBase Smart Contract**: [Earnbase Smart Contract](https://celoscan.io/address/0x9Ce99d57348f85c8Ad00593FaAF4E8CD77dd3008)
 
